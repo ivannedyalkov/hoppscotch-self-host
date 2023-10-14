@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hoppscotch-postgresql
+spec:
+  serviceName: hoppscotch-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hoppscotch-postgresql
+  template:
+    metadata:
+      labels:
+        app: hoppscotch-postgresql
+    spec:
+      containers:
+        - name: hoppscotch-postgres
+          image: hoppscotch-postgres
+          volumeMounts:
+            - mountPath: /var/lib/postgresql
+              name: postgres-storage
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              cpu: 150m
+              memory: 1Gi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready --host=localhost
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready --host=localhost
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 10
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/pgdata
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_DATABASE
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_PASSWORD
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgresql-pvc

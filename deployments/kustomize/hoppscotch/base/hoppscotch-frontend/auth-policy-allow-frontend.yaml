@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: auth-policy-allow-frontend
+  namespace: hoppscotch
+spec:
+  selector:
+    matchLabels:
+      app: hoppscotch-frontend
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            remoteIpBlocks: [ "TODO" ]
+      to:
+        - operation:
+            paths: [ "*" ]

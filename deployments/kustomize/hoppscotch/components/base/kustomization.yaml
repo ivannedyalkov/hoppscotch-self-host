@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: istio-system
+
+resources:
+  - configurations
+  - istio-resources
+
+configMapGenerator:
+  - name: vars
+    behavior: create
+    literals:
+      - HOPPSCOTCH_ADMIN_URL=""
+      - HOPPSCOTCH_FRONTEND_URL=""
+      - HOPPSCOTCH_BACKEND_URL=""
+
+vars:
+  - name: HOPPSCOTCH_ADMIN_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_ADMIN_URL
+  - name: HOPPSCOTCH_FRONTEND_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_FRONTEND_URL
+  - name: HOPPSCOTCH_BACKEND_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_BACKEND_URL

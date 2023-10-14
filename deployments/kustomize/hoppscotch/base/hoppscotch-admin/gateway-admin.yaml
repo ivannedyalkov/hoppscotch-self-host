@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: gateway-hoppscotch-admin
+  namespace: hoppscotch
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: hoppscotch-admin-ingress-cert
+      hosts:
+        - $(HOPPSCOTCH_ADMIN_URL)

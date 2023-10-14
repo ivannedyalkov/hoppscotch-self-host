@@ -1,0 +1,31 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: gateway-hoppscotch-frontend
+  namespace: hoppscotch
+spec:
+  hosts:
+    - $(HOPPSCOTCH_FRONTEND_URL)
+  gateways:
+    - gateway-hoppscotch-frontend
+  http:
+    - route:
+        - destination:
+            host: hoppscotch-frontend
+            port:
+              number: 80
+      corsPolicy:
+        allowOrigins:
+          - exact: $(ADMIN_URL_FULL)
+          - exact: $(BACKEND_URL_FULL)
+          - exact: $(FRONTEND_URL_FULL)
+        allowMethods:
+          - POST
+          - GET
+          - OPTIONS
+          - PUT
+          - PATCH
+          - DELETE
+        allowCredentials: true
+        allowHeaders:
+          - "content-type"

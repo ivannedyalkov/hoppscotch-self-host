@@ -1,0 +1,125 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: hoppscotch
+
+configurations:
+  - configurations.yaml
+
+resources:
+  - hoppscotch-admin
+  - hoppscotch-backend
+  - hoppscotch-frontend
+  - hoppscotch-postgresql
+  - hoppscotch-postgresql-backup
+
+configMapGenerator:
+  - name: vars
+    behavior: create
+    literals:
+      - HOPPSCOTCH_ADMIN_URL=""
+      - HOPPSCOTCH_FRONTEND_URL=""
+      - HOPPSCOTCH_BACKEND_URL=""
+      - FRONTEND_URL_FULL=""
+      - ADMIN_URL_FULL=""
+      - BACKEND_URL_FULL=""
+      - BACKEND_GQL_URL=""
+      - BACKEND_WS_URL=""
+      - BACKEND_API_URL=""
+      - GOOGLE_CALLBACK_URL=""
+      - GITHUB_CALLBACK_URL=""
+      - MICROSOFT_CALLBACK_URL=""
+      - WHITELISTED_ORIGINS=""
+
+vars:
+  - name: HOPPSCOTCH_ADMIN_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_ADMIN_URL
+  - name: HOPPSCOTCH_FRONTEND_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_FRONTEND_URL
+  - name: HOPPSCOTCH_BACKEND_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.HOPPSCOTCH_BACKEND_URL
+  - name: FRONTEND_URL_FULL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.FRONTEND_URL_FULL
+  - name: ADMIN_URL_FULL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.ADMIN_URL_FULL
+  - name: BACKEND_URL_FULL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.BACKEND_URL_FULL
+  - name: BACKEND_GQL_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.BACKEND_GQL_URL
+  - name: BACKEND_WS_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.BACKEND_WS_URL
+  - name: BACKEND_API_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.BACKEND_API_URL
+  - name: GOOGLE_CALLBACK_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.GOOGLE_CALLBACK_URL
+  - name: GITHUB_CALLBACK_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.GITHUB_CALLBACK_URL
+  - name: MICROSOFT_CALLBACK_URL
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.MICROSOFT_CALLBACK_URL
+  - name: WHITELISTED_ORIGINS
+    objref:
+      kind: ConfigMap
+      name: vars
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.WHITELISTED_ORIGINS

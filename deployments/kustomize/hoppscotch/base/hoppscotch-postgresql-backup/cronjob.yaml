@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hoppscotch-postgresql-backup
+  labels:
+    app: hoppscotch-postgresql-backup
+spec:
+  suspend: false
+  schedule: "0 0 * * *" # every day at midnight
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+            - name: hoppscotch-postgres-backup
+              image: hoppscotch-postgres-backup
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "256Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "512Mi"
+              env:
+                - name: DB_ADDR
+                  value: hoppscotch-postgresql
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: hoppscotch-statefulset-db-auth
+                      key: DB_USER
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: hoppscotch-statefulset-db-auth
+                      key: DB_PASSWORD
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: hoppscotch-statefulset-db-auth
+                      key: DB_DATABASE
+              volumeMounts:
+                - mountPath: /backups
+                  name: postgres-backup
+          volumes:
+            - name: postgres-backup
+              persistentVolumeClaim:
+                claimName: postgresql-backup-pvc
+          restartPolicy: OnFailure

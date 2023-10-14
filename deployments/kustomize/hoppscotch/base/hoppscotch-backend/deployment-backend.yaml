@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hoppscotch-backend
+spec:
+  selector:
+    matchLabels:
+      app: hoppscotch-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hoppscotch-backend
+    spec:
+      containers:
+        - name: hoppscotch-backend
+          image: hoppscotch-backend
+          ports:
+            - containerPort: 3170
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+            limits:
+              cpu: "300m"
+              memory: "768Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 3170
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          env:
+            - name: PRODUCTION
+              value: "true"
+            - name: DB_ADDR
+              value: hoppscotch-postgresql
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_PASSWORD
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: hoppscotch-statefulset-db-auth
+                  key: DB_DATABASE
+            - name: DATABASE_URL
+              value: postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_ADDR):$(DB_PORT)/$(DB_DATABASE)
+            - name: DB_URL
+              value: postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_ADDR):$(DB_PORT)/$(DB_DATABASE)
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-session-secrets
+                  key: JWT_SECRET
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-session-secrets
+                  key: SESSION_SECRET
+            - name: TOKEN_SALT_COMPLEXITY
+              value: "10"
+            - name: MAGIC_LINK_TOKEN_VALIDITY
+              value: "3"
+            - name: REFRESH_TOKEN_VALIDITY
+              value: "604800000"
+            - name: ACCESS_TOKEN_VALIDITY
+              value: "86400000"
+            - name: RATE_LIMIT_TTL
+              value: "60"
+            - name: RATE_LIMIT_MAX
+              value: "100"
+            - name: MAILER_SMTP_URL
+              value: "TODO"
+            - name: MAILER_ADDRESS_FROM
+              value: "TODO"
+            - name: VITE_ALLOWED_AUTH_PROVIDERS
+              value: "GOOGLE,GITHUB,MICROSOFT,EMAIL"
+            # Google Auth Config
+            - name: GOOGLE_CLIENT_ID
+              value: "NOT IMPLEMENTED"
+            - name: GOOGLE_CLIENT_SECRET
+              value: "NOT IMPLEMENTED"
+            - name: GOOGLE_CALLBACK_URL
+              value: $(GOOGLE_CALLBACK_URL)
+            - name: GOOGLE_SCOPE
+              value: "email,profile"
+            # Github Auth Config
+            - name: GITHUB_CLIENT_ID
+              value: "NOT IMPLEMENTED"
+            - name: GITHUB_CLIENT_SECRET
+              value: "NOT IMPLEMENTED"
+            - name: GITHUB_CALLBACK_URL
+              value: $(GITHUB_CALLBACK_URL)
+            - name: GITHUB_SCOPE
+              value: "user:email"
+            # Microsoft Auth Config
+            - name: MICROSOFT_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: microsoft-auth
+                  key: client_id
+            - name: MICROSOFT_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: microsoft-auth
+                  key: client_secret
+            - name: MICROSOFT_CALLBACK_URL
+              value: $(MICROSOFT_CALLBACK_URL)
+            - name: MICROSOFT_SCOPE
+              value: "user.read"
+            - name: MICROSOFT_TENANT
+              value: "common"
+            - name: REDIRECT_URL
+              value: $(FRONTEND_URL_FULL)
+            - name: WHITELISTED_ORIGINS
+              value: $(WHITELISTED_ORIGINS)
+            # Base URLs
+            - name: VITE_BASE_URL
+              value: $(FRONTEND_URL_FULL)
+            - name: VITE_SHORTCODE_BASE_URL
+              value: $(FRONTEND_URL_FULL)
+            - name: VITE_ADMIN_URL
+              value: $(ADMIN_URL_FULL)
+            # Backend URLs
+            - name: VITE_BACKEND_GQL_URL
+              value: $(BACKEND_GQL_URL)
+            - name: VITE_BACKEND_WS_URL
+              value: $(BACKEND_WS_URL)
+            - name: VITE_BACKEND_API_URL
+              value: $(BACKEND_API_URL)
+            # Terms Of Service And Privacy Policy Links (Optional)
+            - name: VITE_APP_TOS_LINK
+              value: "https://docs.hoppscotch.io/terms"
+            - name: VITE_APP_PRIVACY_POLICY_LINK
+              value: "https://docs.hoppscotch.io/privacy"

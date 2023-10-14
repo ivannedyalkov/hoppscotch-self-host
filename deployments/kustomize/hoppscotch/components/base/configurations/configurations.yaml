@@ -1,0 +1,8 @@
+varReference:
+  # Certificate support
+  - path: spec/dnsNames
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+  - path: spec/commonName
+    apiVersion: cert-manager.io/v1
+    kind: Certificate

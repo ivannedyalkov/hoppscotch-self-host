@@ -1,0 +1,31 @@
+# Reference: https://skaffold.dev/docs/references/yaml/
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: hoppscotch
+build:
+  tagPolicy:
+    gitCommit: {}
+  artifacts:
+    - image: hoppscotch-admin
+      kaniko:
+        dockerfile: Hoppscotch-Admin.Dockerfile
+    - image: hoppscotch-backend
+      kaniko:
+        dockerfile: Hoppscotch-Backend.Dockerfile
+    - image: hoppscotch-frontend
+      kaniko:
+        dockerfile: Hoppscotch-Frontend.Dockerfile
+    - image: hoppscotch-postgres
+      kaniko:
+        dockerfile: Hoppscotch-PostgreSQL.Dockerfile
+    - image: hoppscotch-postgres-backup
+      kaniko:
+        dockerfile: Hoppscotch-PostgreSQL-Backup.Dockerfile
+profiles:
+  - name: dev
+    deploy:
+      kustomize:
+        paths:
+          - overlays/dev/euwe1
+          - components/overlays/dev/euwe1

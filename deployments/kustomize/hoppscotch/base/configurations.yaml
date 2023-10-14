@@ -1,0 +1,20 @@
+varReference:
+  # VirtualService support
+  - path: spec/hosts
+    kind: VirtualService
+    apiVersion: networking.istio.io/v1beta1
+
+  # VirtualService support for allowOrigins
+  - path: spec/http/corsPolicy/allowOrigins/exact
+    kind: VirtualService
+    apiVersion: networking.istio.io/v1beta1
+
+  # Gateway support
+  - path: spec/servers/hosts
+    apiVersion: networking.istio.io/v1beta1
+    kind: Gateway
+
+  # Deployment support for container environment variables
+  - path: spec/template/spec/containers/env/value
+    apiVersion: apps/v1
+    kind: Deployment

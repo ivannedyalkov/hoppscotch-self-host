@@ -1,0 +1,20 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/namespace-wide: "true"
+  name: hoppscotch-statefulset-db-auth
+  namespace: hoppscotch
+spec:
+  encryptedData:
+    DB_DATABASE: TODO
+    DB_PASSWORD: TODO
+    DB_PORT: TODO
+    DB_USER: TODO
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/namespace-wide: "true"
+      name: hoppscotch-statefulset-db-auth
+      namespace: hoppscotch
+    type: Opaque

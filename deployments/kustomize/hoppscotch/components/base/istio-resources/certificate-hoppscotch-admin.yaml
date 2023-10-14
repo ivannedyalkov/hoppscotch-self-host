@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hoppscotch-admin-ingress-cert
+  namespace: istio-system
+  labels:
+    use-dns01-challenge: "true"
+spec:
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  secretName: hoppscotch-admin-ingress-cert
+  commonName: $(HOPPSCOTCH_ADMIN_URL)
+  dnsNames:
+    - $(HOPPSCOTCH_ADMIN_URL)
